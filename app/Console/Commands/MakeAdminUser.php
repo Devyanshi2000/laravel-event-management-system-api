@@ -72,6 +72,7 @@ class MakeAdminUser extends Command
             'name' => $name,
             'email' => $email,
             'password' => $password,
+            'email_verified_at' => now(),
         ]);
         $this->info("Admin User created successfully.");
 
