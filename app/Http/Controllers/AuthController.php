@@ -16,7 +16,6 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'role' => 'required|in:Admin,Event Creator,User'
         ]);
 
         $user = User::create([
@@ -25,7 +24,7 @@ class AuthController extends Controller
             'password' => $request->password,
         ]);
 
-        $user->assignRole($request->role);
+        $user->assignRole("User");
 
         return response()->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
     }
