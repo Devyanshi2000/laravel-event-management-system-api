@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -26,7 +27,7 @@ class AuthController extends Controller
 
         $user->assignRole($request->role);
 
-        return response()->json(['message' => 'User registered successfully']);
+        return response()->json(['message' => 'User registered successfully'], Response::HTTP_CREATED);
     }
 
     public function login(Request $request)
@@ -37,7 +38,6 @@ class AuthController extends Controller
         ]);
 
         $user = User::where('email', $request->email)->first();
-
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials are incorrect.']
@@ -48,5 +48,17 @@ class AuthController extends Controller
             'token' => $user->createToken('API Token')->plainTextToken,
             'role' => $user->roles->pluck('name')
         ]);
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([], Response::HTTP_NO_CONTENT);
+    }
+
+    public function me(Request $request)
+    {
+        return response()->json($request->user());
     }
 }
